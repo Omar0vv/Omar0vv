@@ -1,53 +1,130 @@
-create table Boxes(
- 	           code character(4) PRIMARY KEY ,
- 	           contents varchar(255), 
-value real,
-warehouse integer,
- 	           foreign key(warehouse) references Warehouse(code) 
-);
- 
-drop table Warehouse;
-create table Warehouse(
-code integer PRIMARY KEY ,
-location varchar(255),
- 	           capacity integer 
-);
- insert into Warehouse
- VALUES (1, 'Chicago', 3),(2, 'Chicago', 4), (3, 'New York', 7),(4, 'Los Angeles', 2), (5, 'San    Francisco', 8);
+1)
+a.
+select*
+from course
+where credits > 3;
 
- insert into Boxes
- values('OMN7', 'Rocks', '180', '3'),('4H8P', 'Rocks', '250', '1'),('4RT3', 'Scissors','190', '4'), ('7G3H', 'Rocks', '200', '1'),('8JN6', 'Papers', '75', '1'),('8Y6U', 'Papers', '50', '3'), ('9J6F', 'Papers', '175', '2'),('LL08', 'Rocks', '140', '4'),('POH6', 'Scissors', '125', '1'), ('P2T6', 'Scissors', '150', '2'),('TU55', 'Papers', '90', '5'); 
+b.
+select*
+from classroom
+where building ='Watson' or building ='Packard';
 
---4 
-select * from Warehouse; 
---5 
-select * from boxes where value > 150; 
---6 
-select distinct contents from Boxes; 
---7 
-select warehouse, count(warehouse) from boxes 
-group by warehouse order by count(warehouse); 
---8 
-select warehouse, count(warehouse) from boxes
-group by warehouse having count(warehouse) > 2;
- --9 
-insert into warehouse 
-values (6, 'New York', 3);
- --10 
-select * from boxes; 
-insert into boxes 
-values('H5RT', 'Papers', '200', 2); 
---11 
-select * from boxes order by value;
-update boxes set value = value * 15/100 
-where value = (SELECT distinct value 
-FROM Boxes ORDER BY value DESC 
-LIMIT 1 offset 2) 
-returning *; 
---12 
-delete from boxes 
-where value < 150; 
---13 
-delete from boxes
-where warehouse in (select code from warehouse where location = 'New York') returning *;
- select * from boxes;
+c.
+select*
+from course
+where dept_name  'Comp.Sei';
+
+d.
+select course id
+from section 
+where semester='Fall';
+
+e.
+select*
+from student
+where tot cred >45 and tot cred <90;
+
+f.
+select*
+from student
+where name like '%a' or name like '%i' or name like '%u' or name like '%e' or name like '%0';
+
+g.
+select course_id
+from prereq
+where prereq id = 'CS-101'
+
+2)
+a.
+select dept_name,avg(salary)
+from instructor 
+group by dept_name;
+
+b.
+select*
+from department
+where dept_name=(select dept_name
+from (select dept_name,count(*)
+from course
+group by dept_name
+order by count desc
+limit 1 )as d);
+
+
+c.
+select dept_name,count(*)
+from course
+group by dept_name 
+order by count asc;
+
+d.
+select id,name
+from student
+where id in (select id from(select id,count( course_id in
+	(select course_id
+	from (select*
+	from course
+	where dept_name - 'Comp.Sei') as m))
+from takes
+group by id) as d
+where count > 2);
+
+e.
+select id,name,dept_name
+from instructor
+where dept_name - 'Biology' or dept_name - 'Philosophy' or dept_name - 'Music';
+
+f.
+select id,name
+from instructor
+where dept_name in (select dept_name
+from (select course.course_id
+from teaches,course
+where teaches.year=2018) as d);
+
+3)
+a.
+select*
+from student
+where id in (select id
+from takes 
+where course_id in (select course_id
+			from course
+			where dept_name='Comp.Sei') and grade = 'A' or grade = 'A-');
+
+b.
+select*
+from instructor
+where id in (select id
+			from advisor
+			where s_id in (select id
+						from takes
+						where grade='B-'or grade='C' or grade='C-' or grade='F'));
+
+c.
+select*
+from course
+where course_id in (select course_id
+				from takes
+				where grade !='F' and grade !='C');
+
+d.
+select*
+from instructor
+where id in (select id
+			from advisor
+			where s_id in (select id
+						from takes
+						where grade !='A'));
+
+e.
+select distinct course_id
+from section
+where time_slot_id in (select time_slot.time_slot_id
+from time_slot
+where end hr < 12);
+
+
+	
+
+
